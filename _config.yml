@@ -22,12 +22,12 @@ source-code: https://github.com/CollectionBuilder/collectionbuilder-sheets
 # title of site appears in banner
 title: Non-Binary Spanish Digital Archive
 # tagline, a short phrase that will appear throughout the site in the top banner
-tagline: A Free Compilation of Resources in Non-Binary Spanish
+tagline: A Free and Open-Access Compilation of Resources in Non-Binary Spanish
 # description appears in meta tags and other locations
 # this description might appear in search result lists, keep around 160 characters max
 description: "CollectionBuilder-Sheets is a template for creating simple digital exhibit websites by loading collection metadata directly from a CSV, designed for teaching digital library skills."
 # creator of the digital collection, to appear in meta tags; we typically use our GitHub usernames but feel free to just use your name
-author: CollectionBuilder
+author: Euge Stumm and Ben Papadopoulos
 
 ##########
 # COLLECTION SETTINGS
