@@ -20,9 +20,9 @@ source-code: https://github.com/CollectionBuilder/collectionbuilder-sheets
 # SITE SETTINGS
 #
 # title of site appears in banner
-title: Non-Binary Spanish Digital Archive
+title: Gender Inclusive Spanish Digital Archive
 # tagline, a short phrase that will appear throughout the site in the top banner
-tagline: A Free and Open-Access Compilation of Resources in Non-Binary Spanish
+tagline: A Free and Open-Access Compilation of Resources in Gender Inclusive Spanish
 # description appears in meta tags and other locations
 # this description might appear in search result lists, keep around 160 characters max
 description: "CollectionBuilder-Sheets is a template for creating simple digital exhibit websites by loading collection metadata directly from a CSV, designed for teaching digital library skills."
