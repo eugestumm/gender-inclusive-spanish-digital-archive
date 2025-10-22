@@ -22,5 +22,7 @@ Stumm, Euge, and Ben Papadopoulos. *Gender-Inclusive Spanish Digital Archive*. L
 ### ABNT:
 STUMM, Euge; PAPADOPOULOS, Ben. *Gender-Inclusive Spanish Digital Archive*. 2025. Available at: https://eugestumm.github.io/gender-inclusive-spanish-digital-archive/method.html. Accessed on: 22 Oct. 2025.
 
-## This project was featured in the following publications
+## This project was featured in the following publications:
+
+* TBD
 
