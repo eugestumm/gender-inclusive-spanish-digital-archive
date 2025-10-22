@@ -12,41 +12,14 @@ credits: true
 
 ## About This Project
 
-Euge bio, Ben bio
+The Gender-Inclusive Spanish Digital Archive was constructed by Euge Stumm and Ben Papadopoulos for presentation in the <a href=“https://sections.lasaweb.org/sections/sexualities-studies/show.php?type=news&id=692&pg=2”>Workshop on Alliances: Gender-Inclusive Language, History, and the Struggle against Colonialism</a> at the Sexuality Studies section of the Latin American Studies Association. This Digital Humanities project provides participants with interactive temporal and spatial visualizations of Spanish-speaking cultural productions featuring gender-inclusive forms, as well as its theoretical underpinnings centered around colonialism and related forms of oppression, ranging from colonial to contemporary times. Our primary resources include colonial language documents, art, zines, poetry, theses, manifestos, short stories, novels, and videos. You may view the Archive <a href=“https://eugestumm.github.io/gender-inclusive-spanish-digital-archive/map.html”>spatially</a> or <a href=“https://eugestumm.github.io/gender-inclusive-spanish-digital-archive/timeline.html”>temporally</a> and a full list of the data with descriptions may be located <a href=“https://eugestumm.github.io/gender-inclusive-spanish-digital-archive/data.html”>here</a>.
 
+## About The Authors
 
+<a href="https://eugestumm.github.io/">Euge Stumm</a> (they/them/elle/elu) is a Dean's Fellow and Ph.D. student in Literary, Cultural, and Linguistic Studies in the Department of Modern Languages and Literatures at the University of Miami. Their research examines how gender and sexual dissidents in Latin America construct language to express their experiences. Their research corpus focuses on cultural productions utilizing inclusive language and non-binary Spanish in Argentina, and Pajubá, a cryptolect originally developed by travesti sex workers, in Brazil. Currently, they are developing an open-access Pajubá Digital Archive, gathering multiple resources, dictionaries, and scholarly works on the cryptolect.
+
+<a href=“https://www.benpapadopoulos.com”> Ben Papadopoulos</a> (he/they/él/elle) is a recent Ph.D graduate in Hispanic Languages and Literatures from the University of California, Berkeley. He is primarily interested in the fields of sociolinguistics and critical sociology. His research revolves around the topic of gender-inclusive language and makes sociological arguments about language as a category of power and the right of queer and trans people to have and use adequate forms of self-identification. Relatedly, he is the founder of the <a href="https://www.genderinlanguage.com">Gender in Language Project</a>, which aims to offer grammars of gender in as many languages as possible.
+
+## About This Website
 
 This site is generated using [CollectionBuilder-Sheets](https://github.com/CollectionBuilder/collectionbuilder-sheets), a template  for creating simple digital exhibit websites by loading collection metadata directly from a CSV, designed for teaching digital library skills and easy hosting on GitHub Pages.
-
-Using CB-Sheets, it is possible to use a live Google Sheets spreadsheet for your collection metadata, allowing you to see the outcome of metadata edits update immediately.
-This enables active collaboration to prototype collections with minimal set up.
-
-<button class="btn btn-lg btn-success" data-bs-toggle="modal" data-bs-target="#cbSetUpModal">
-    <svg class="bi icon-sprite" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
-        <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
-        <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
-    </svg> 
-    Change the Metadata!
-</button>
-{:.text-center}
-
-## Create your own Metadata
-
-To create metadata compatible with this CollectionBuilder-Sheets instance the best way to get started is to make of copy of our template in Google Drive:
-
-[CollectionBuilder Metadata Template](https://docs.google.com/spreadsheets/d/1Uv9ytll0hysMOH1j-VL1lZx6PWvc1zf3L35sK_4IuzI/copy?usp=sharing){:.btn .btn-outline-primary}
-{:.text-center}
-
-Alternatively, you can [download the template CSV]({{ '/assets/metadata-template.csv' | relative_url }}) and work on your local machine.
-We suggest editing your CSV using [LibreOffice](https://www.libreoffice.org/) Calc, [OpenRefine](https://openrefine.org/), or Google Sheets (and do not suggest using Excel, since Excel's CSV output is not correctly formatted).
-
-Describe your items in your copy of the template, following the [Metadata Guidelines]({{ '/metadata.html' | relative_url }}). 
-
-Once you have items added you can test your metadata by clicking the "Change the Metadata" button above.
-
-## Learn More
-
-For full details of creating your own collection site, visit [CollectionBuilder Documentation](https://collectionbuilder.github.io/cb-docs/)!
-
-The template repository features four objects from the University of Idaho Library's [Digital Collections](https://www.lib.uidaho.edu/digital). 
-Featured image by [JJ Ying on Unsplash](https://unsplash.com/photos/WmnsGyaFnCQ).
