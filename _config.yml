@@ -12,9 +12,10 @@
 url: https://eugestumm.github.io
 # baseurl is path to location on the domain if necessary e.g. /digital/hjccc
 # on GitHub Pages it is your github repository's name prefixed with a /
-baseurl: /CollectionBuilder-Remix
+baseurl: /gender-inclusive-spanish-digital-archive
 # location of code, the full url to your github repository
-source-code: https://github.com/eugestumm/CollectionBuilder-Remix
+source-code: 
+  https://github.com/eugestumm/gender-inclusive-spanish-digital-archive
 
 ##########
 # SITE SETTINGS
