@@ -1,15 +1,17 @@
-field,display_name,browse_link,external_link
-title,Title,
-creator,Creator,
-date,Date Created,
-description,Description,
-subject,Subjects,true
-location,Location
-latitude,Latitude
-longitude,Longitude
-source,Source
-identifier,Source Identifier,,
-type,Type,
-format,Format,
-rights,Rights,
-rightsstatement,Rights Statement,,true
+field,translate_id_metadata,lang,browse_link,external_link
+title,metadata-title,en
+title-es,metadata-title,es
+creator,metadata-creator,en;es,true
+language,metadata-language,en;es,true
+date,metadata-date,en;es
+description-en,metadata-description,en
+description-es,metadata-description,es
+subject-en,metadata-subject,en,true
+subject-es,metadata-subject,es,true
+locations_en,metadata-location,en,true
+locations_es,metadata-location,es,true
+source,metadata-source,en;es
+format,metadata-format,en;es
+rights,metadata-rights,en;es
+rightsstatement,metadata-rightsstatement,en;es,,true
+gender-strategy,metadata-gender-strategy,en;es,true

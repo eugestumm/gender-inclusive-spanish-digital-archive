@@ -2,7 +2,6 @@
 title: Method
 layout: page
 permalink: /method.html
-# page explaining the methodological reasoning behind this project
 ---
 
 # Method
@@ -20,4 +19,3 @@ For the cataloging process, the works were thoroughly reviewed and separated mos
 Some of the early modern and colonial materials do not necessarily utilize grammatical innovation but serve as evidence of the limits of the (grammatical) gender binary in Spanish. This project features these works to archive and historicize early manifestations toward gender-inclusive language in Spanish. 
 
 To display the metadata, the project utilized the CollectionBuilder framework. The annotated metadata, as well as the framework itself, are published under a Creative Commons 4.0 CC-BY license, based on the original CollectionBuilder project, which is licensed under the MIT license.
-

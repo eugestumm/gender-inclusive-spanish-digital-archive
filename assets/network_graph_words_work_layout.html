@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Cultural Production Network Explorer</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f1a;
+    --surface: rgba(255,255,255,0.04);
+    --surface-hover: rgba(255,255,255,0.08);
+    --border: rgba(255,255,255,0.10);
+    --accent-word: #4eecd4;
+    --accent-title: #f4a94e;
+    --accent-link: rgba(255,255,255,0.18);
+    --text-primary: #f0ede8;
+    --text-muted: rgba(240,237,232,0.5);
+    --tooltip-bg: rgba(10,12,25,0.96);
+    --word-from: #1a3a5c;
+    --word-to: #0e7490;
+    --title-from: #78350f;
+    --title-to: #b45309;
+    --shadow-word: rgba(14, 116, 144, 0.5);
+    --shadow-title: rgba(180, 83, 9, 0.5);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    overflow: hidden;
+    color: var(--text-primary);
+  }
+
+  /* Subtle star-field background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 20% 80%, rgba(78,236,212,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 20%, rgba(244,169,78,0.04) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: rgba(13,15,26,0.8);
+    backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    z-index: 100;
+  }
+
+  .brand {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(18px, 3vw, 26px);
+    letter-spacing: 0.01em;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+
+  .subtitle {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .controls {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .control-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+  }
+
+  .slider {
+    width: 110px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    outline: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+  }
+
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--text-primary);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    transition: transform 0.15s;
+  }
+
+  .slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+  .button {
+    padding: 7px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  .button:hover {
+    background: var(--surface-hover);
+    border-color: rgba(255,255,255,0.22);
+  }
+
+  /* ── Viz ── */
+  .viz-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+  }
+
+  /* ── Links ── */
+  .link {
+    stroke: var(--accent-link);
+    stroke-width: 1.4px;
+    stroke-opacity: 0.6;
+    transition: stroke 0.25s, stroke-opacity 0.25s, stroke-width 0.25s;
+  }
+
+  .link.highlighted {
+    stroke: var(--accent-word);
+    stroke-width: 2.5px;
+    stroke-opacity: 1;
+  }
+
+  .link.dimmed {
+    stroke-opacity: 0.08;
+  }
+
+  /* ── Nodes ── */
+  .node-group { cursor: pointer; }
+
+  .word-node {
+    fill: url(#wordGradient);
+    stroke: rgba(78,236,212,0.25);
+    stroke-width: 1.5px;
+    filter: drop-shadow(0 3px 10px var(--shadow-word));
+    transition: filter 0.2s, stroke 0.2s;
+  }
+
+  .word-node:hover {
+    stroke: var(--accent-word);
+    stroke-width: 2px;
+    filter: drop-shadow(0 5px 16px var(--shadow-word));
+  }
+
+  .title-node {
+    fill: url(#titleGradient);
+    stroke: rgba(244,169,78,0.3);
+    stroke-width: 2px;
+    filter: drop-shadow(0 5px 16px var(--shadow-title));
+    transition: filter 0.2s, stroke 0.2s;
+  }
+
+  .title-node:hover {
+    stroke: var(--accent-title);
+    stroke-width: 2.5px;
+    filter: drop-shadow(0 8px 24px var(--shadow-title));
+  }
+
+  .node-group.dimmed circle {
+    opacity: 0.15;
+  }
+
+  .node-group.dimmed text {
+    opacity: 0.1;
+  }
+
+  .node-text {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .word-text {
+    fill: rgba(240,237,232,0.9);
+    font-size: 10px;
+  }
+
+  .title-text {
+    fill: #fff;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  /* ── Tooltip ── */
+  .tooltip {
+    position: absolute;
+    background: var(--tooltip-bg);
+    color: var(--text-primary);
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    border: 1px solid var(--border);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+    max-width: 240px;
+    z-index: 9999;
+  }
+
+  .tooltip.visible { opacity: 1; }
+
+  .tooltip-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 15px;
+    margin-bottom: 6px;
+    color: var(--accent-title);
+    line-height: 1.3;
+  }
+
+  .tooltip-title.word-title { color: var(--accent-word); }
+
+  .tooltip-info {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .tooltip-cta {
+    margin-top: 8px;
+    font-size: 11px;
+    color: rgba(240,237,232,0.45);
+    border-top: 1px solid var(--border);
+    padding-top: 7px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .tooltip-cta svg { flex-shrink: 0; }
+
+  /* ── Legend ── */
+  .legend {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(13,15,26,0.75);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 15px;
+    z-index: 50;
+  }
+
+  .legend-title {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    margin-bottom: 9px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 7px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .legend-item:last-child { margin-bottom: 0; }
+
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .word-dot { background: var(--accent-word); opacity: 0.8; }
+  .title-dot { background: var(--accent-title); opacity: 0.8; }
+
+  /* ── Loading ── */
+  .loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 200;
+  }
+
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--border);
+    border-top: 3px solid var(--accent-word);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+    margin: 0 auto 14px;
+  }
+
+  .loading-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+  }
+
+  @keyframes spin {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* ── Zoom controls ── */
+  .zoom-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 50;
+  }
+
+  .zoom-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: rgba(13,15,26,0.75);
+    backdrop-filter: blur(10px);
+    color: var(--text-primary);
+    font-size: 18px;
+    font-weight: 300;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .zoom-btn:hover {
+    background: var(--surface-hover);
+    border-color: rgba(255,255,255,0.22);
+  }
+
+  /* ── Stats bar ── */
+  .stats-bar {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(13,15,26,0.75);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 7px 18px;
+    display: flex;
+    gap: 18px;
+    z-index: 50;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .stat { display: flex; align-items: center; gap: 6px; }
+  .stat-val { color: var(--text-primary); font-weight: 600; }
+
+  @media (max-width: 768px) {
+    .header { flex-direction: column; align-items: stretch; padding: 12px 16px; }
+    .controls { justify-content: center; }
+    .stats-bar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="brand">
+      <h1 class="title">Cultural Production Network</h1>
+      <span class="subtitle">Bajuba Lexicon Network</span>
+    </div>
+    <div class="controls">
+      <div class="control-group">
+        <label class="control-label">Link Strength</label>
+        <input type="range" class="slider" id="linkStrength" min="0.1" max="2" step="0.1" value="0.8">
+      </div>
+      <div class="control-group">
+        <label class="control-label">Node Spacing</label>
+        <input type="range" class="slider" id="nodeSpacing" min="50" max="300" step="10" value="130">
+      </div>
+      <button class="button" id="resetBtn">Reset View</button>
+    </div>
+  </div>
+
+  <div class="viz-container">
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <div class="loading-text">Loading network…</div>
+    </div>
+
+    <svg id="network-svg">
+      <defs>
+        <linearGradient id="wordGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#1a3a5c"/>
+          <stop offset="100%" style="stop-color:#0e7490"/>
+        </linearGradient>
+        <linearGradient id="titleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#92400e"/>
+          <stop offset="100%" style="stop-color:#b45309"/>
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <div class="legend">
+      <div class="legend-title">Legend</div>
+      <div class="legend-item"><div class="legend-dot word-dot"></div>Lexical Item</div>
+      <div class="legend-item"><div class="legend-dot title-dot"></div>Cultural Production</div>
+    </div>
+
+    <div class="zoom-controls">
+      <button class="zoom-btn" id="zoomIn">+</button>
+      <button class="zoom-btn" id="zoomOut">−</button>
+    </div>
+
+    <div class="stats-bar" id="statsBar" style="display:none">
+      <div class="stat">Productions: <span class="stat-val" id="statProductions">—</span></div>
+      <div class="stat">Lexical Items: <span class="stat-val" id="statWords">—</span></div>
+      <div class="stat">Connections: <span class="stat-val" id="statLinks">—</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="tooltip" class="tooltip"></div>
+
+<script>
+  const BASE_URL = "http://eugestumm.github.io/BajubaDigitalArchive/browse.html";
+  const CSV_URL  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTOJ65zw28y13QZmsFBDHkS9DZo1Jw1SVOfulvrmyEzR9hMoWdnd5CYGDKpWoVWq-dhoTIOli16M_Yo/pub?output=csv";
+
+  const svg       = d3.select("#network-svg");
+  const tooltip   = d3.select("#tooltip");
+  const loading   = d3.select("#loading");
+
+  let width, height, simulation, zoomBehavior;
+  let allLinkEls, allNodeEls;
+
+  // ── Dimensions ──────────────────────────────────────────────
+  function updateDimensions() {
+    const c = document.querySelector('.viz-container');
+    width  = c.clientWidth;
+    height = c.clientHeight;
+    svg.attr("width", width).attr("height", height);
+  }
+  updateDimensions();
+  window.addEventListener('resize', () => {
+    updateDimensions();
+    if (simulation) simulation.force("center", d3.forceCenter(width/2, height/2)).alpha(0.2).restart();
+  });
+
+  // ── Zoom ────────────────────────────────────────────────────
+  const zoomLayer = svg.append("g").attr("class", "zoom-layer");
+
+  zoomBehavior = d3.zoom()
+    .scaleExtent([0.2, 10])
+    .on("zoom", e => zoomLayer.attr("transform", e.transform));
+
+  svg.call(zoomBehavior);
+
+  d3.select("#zoomIn").on("click",  () => svg.transition().duration(280).call(zoomBehavior.scaleBy, 1.5));
+  d3.select("#zoomOut").on("click", () => svg.transition().duration(280).call(zoomBehavior.scaleBy, 1/1.5));
+  d3.select("#resetBtn").on("click", () => {
+    svg.transition().duration(500).call(zoomBehavior.transform, d3.zoomIdentity);
+    if (simulation) simulation.alpha(0.3).restart();
+    // Clear any highlights
+    if (allLinkEls) allLinkEls.classed("highlighted", false).classed("dimmed", false);
+    if (allNodeEls) allNodeEls.classed("dimmed", false);
+  });
+
+  // ── Data ─────────────────────────────────────────────────────
+  fetch(CSV_URL)
+    .then(r => r.text())
+    .then(raw => {
+      loading.style("display", "none");
+
+      const parsed    = d3.csvParse(raw);
+      const nodesMap  = new Map();
+      const linksArr  = [];
+      const wordFreq  = new Map();
+
+      parsed.forEach(row => {
+        const words   = row["words_catalogued"]?.split(";").map(w => w.trim()).filter(Boolean);
+        const title   = row["title"]?.trim();
+        const creator = row["creator"]?.trim();
+        const date    = row["date"]?.trim();
+        const id      = row["identifier"]?.trim() || row["id"]?.trim();
+
+        if (!words || !title) return;
+
+        if (!nodesMap.has(title)) {
+          nodesMap.set(title, {
+            id: title, group: "title", type: "title",
+            creator, date,
+            // identifier for URL hash (fall back to slugified title)
+            identifier: id || slugify(title),
+            connections: 0
+          });
+        }
+
+        words.forEach(word => {
+          wordFreq.set(word, (wordFreq.get(word) || 0) + 1);
+          if (!nodesMap.has(word)) {
+            nodesMap.set(word, { id: word, group: "word", type: "word", connections: 0 });
+          }
+          linksArr.push({ source: word, target: title });
+        });
+      });
+
+      // Count connections
+      linksArr.forEach(l => {
+        nodesMap.get(l.source).connections = (nodesMap.get(l.source).connections || 0) + 1;
+        nodesMap.get(l.target).connections = (nodesMap.get(l.target).connections || 0) + 1;
+      });
+
+      nodesMap.forEach(n => {
+        if (n.group === "word") n.frequency = wordFreq.get(n.id) || 1;
+        else n.frequency = 2;
+      });
+
+      const nodes = Array.from(nodesMap.values());
+      const links = linksArr;
+
+      // Stats
+      const productions = nodes.filter(n => n.group === "title").length;
+      const keywords    = nodes.filter(n => n.group === "word").length;
+      document.getElementById("statProductions").textContent = productions;
+      document.getElementById("statWords").textContent       = keywords;
+      document.getElementById("statLinks").textContent       = links.length;
+      document.getElementById("statsBar").style.display      = "flex";
+
+      initViz(nodes, links);
+    })
+    .catch(err => {
+      loading.html('<div style="color:#f87171;font-size:13px;">Failed to load data.<br>Check the CSV URL.</div>');
+      console.error(err);
+    });
+
+  // ── Slug helper ──────────────────────────────────────────────
+  function slugify(str) {
+    return str.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
+  }
+
+  // ── Visualization ────────────────────────────────────────────
+  function initViz(nodes, links) {
+    const minR  = 6, maxR = 22, titleR = 30;
+    const freqExt   = d3.extent(nodes.filter(d => d.group === "word"), d => d.frequency);
+    const sizeScale = d3.scaleSqrt().domain(freqExt || [1,1]).range([minR, maxR]);
+
+    function nodeR(d) { return d.group === "title" ? titleR : sizeScale(d.frequency); }
+
+    simulation = d3.forceSimulation(nodes)
+      .force("link",      d3.forceLink(links).id(d => d.id).distance(130).strength(0.8))
+      .force("charge",    d3.forceManyBody().strength(-280))
+      .force("center",    d3.forceCenter(width/2, height/2))
+      .force("collision", d3.forceCollide(d => nodeR(d) + 7));
+
+    // ── Links
+    const linkG = zoomLayer.append("g").attr("class", "links");
+    allLinkEls  = linkG.selectAll("line")
+      .data(links).join("line")
+      .attr("class", "link");
+
+    // ── Nodes
+    const nodeG = zoomLayer.append("g").attr("class", "nodes");
+    allNodeEls  = nodeG.selectAll("g")
+      .data(nodes).join("g")
+      .attr("class", "node-group")
+      .call(d3.drag()
+        .on("start", (e,d) => { if (!e.active) simulation.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+        .on("drag",  (e,d) => { d.fx=e.x; d.fy=e.y; })
+        .on("end",   (e,d) => { if (!e.active) simulation.alphaTarget(0); d.fx=null; d.fy=null; })
+      );
+
+    // Circles
+    allNodeEls.append("circle")
+      .attr("r", d => nodeR(d))
+      .attr("class", d => d.group === "title" ? "title-node" : "word-node")
+      .on("mouseover", showTooltip)
+      .on("mousemove", moveTooltip)
+      .on("mouseout",  hideTooltip)
+      .on("click",     handleClick);
+
+    // Labels
+    allNodeEls.append("text")
+      .attr("text-anchor", "middle")
+      .attr("dy", "0.35em")
+      .attr("class", d => d.group === "title" ? "node-text title-text" : "node-text word-text")
+      .each(function(d) { wrapText(d3.select(this), d.id, nodeR(d) * 1.75); });
+
+    // ── Controls
+    d3.select("#linkStrength").on("input", function() {
+      simulation.force("link").strength(+this.value);
+      simulation.alpha(0.3).restart();
+    });
+    d3.select("#nodeSpacing").on("input", function() {
+      simulation.force("link").distance(+this.value);
+      simulation.alpha(0.3).restart();
+    });
+
+    // ── Tick
+    simulation.on("tick", () => {
+      allLinkEls
+        .attr("x1", d => d.source.x).attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x).attr("y2", d => d.target.y);
+      allNodeEls
+        .attr("transform", d => `translate(${d.x},${d.y})`);
+    });
+
+    // ─────────────────────────────────────────────────────────
+    // Click → open archive link
+    // Word node  → browse.html#word
+    // Title node → browse.html#identifier
+    // ─────────────────────────────────────────────────────────
+    function handleClick(event, d) {
+      event.stopPropagation();
+
+      // Highlight connections
+      const connectedLinks = links.filter(l =>
+        l.source.id === d.id || l.target.id === d.id
+      );
+      const connectedIds = new Set();
+      connectedLinks.forEach(l => {
+        connectedIds.add(l.source.id);
+        connectedIds.add(l.target.id);
+      });
+
+      allLinkEls
+        .classed("highlighted", l => connectedLinks.includes(l))
+        .classed("dimmed",      l => !connectedLinks.includes(l));
+
+      allNodeEls
+        .classed("dimmed", n => !connectedIds.has(n.id) && n.id !== d.id);
+
+      // Navigate after short delay so user sees the highlight
+      const target = d.group === "title"
+        ? `${BASE_URL}#${d.identifier}`
+        : `${BASE_URL}#${encodeURIComponent(d.id)}`;
+
+      setTimeout(() => window.open(target, "_blank"), 300);
+
+      // Reset highlight after 2s
+      setTimeout(() => {
+        allLinkEls.classed("highlighted", false).classed("dimmed", false);
+        allNodeEls.classed("dimmed", false);
+      }, 2200);
+    }
+
+    // Click on background → clear highlights
+    svg.on("click", () => {
+      allLinkEls.classed("highlighted", false).classed("dimmed", false);
+      allNodeEls.classed("dimmed", false);
+    });
+
+    // ── Tooltip helpers
+    function showTooltip(event, d) {
+      const isTitle = d.group === "title";
+
+      const lines = [
+        isTitle && d.creator ? `<div class="tooltip-info">Creator: ${d.creator}</div>` : '',
+        isTitle && d.date    ? `<div class="tooltip-info">Date: ${d.date}</div>` : '',
+        `<div class="tooltip-info">Connections: ${d.connections}</div>`,
+        !isTitle && d.frequency > 1
+          ? `<div class="tooltip-info">Found in ${d.frequency} productions</div>` : '',
+        `<div class="tooltip-cta">
+           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+             <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+           </svg>
+           Click to open in archive
+         </div>`
+      ].filter(Boolean).join('');
+
+      tooltip
+        .html(`
+          <div class="tooltip-title ${isTitle ? '' : 'word-title'}">${d.id}</div>
+          <div class="tooltip-info" style="margin-bottom:5px;opacity:0.55;font-size:11px;letter-spacing:0.06em;text-transform:uppercase">
+            ${isTitle ? 'Cultural Production' : 'Lexical Item'}
+          </div>
+          ${lines}
+        `)
+        .classed("visible", true);
+
+      moveTooltip(event);
+    }
+
+    function moveTooltip(event) {
+      const tx = event.pageX + 16;
+      const ty = event.pageY - 12;
+      tooltip
+        .style("left", `${Math.min(tx, window.innerWidth - 260)}px`)
+        .style("top",  `${Math.max(ty, 8)}px`);
+    }
+
+    function hideTooltip() {
+      tooltip.classed("visible", false);
+    }
+  }
+
+  // ── Text wrap helper ─────────────────────────────────────────
+  function wrapText(textEl, label, maxWidth) {
+    const words      = label.split(/\s+/).reverse();
+    const lineHeight = 1.15;
+    const maxLines   = 2;
+    let line = [], lineNum = 0;
+
+    textEl.text(null);
+    let tspan = textEl.append("tspan").attr("x", 0).attr("dy", "0.35em");
+
+    while (words.length > 0 && lineNum < maxLines) {
+      const word = words.pop();
+      line.push(word);
+      tspan.text(line.join(" "));
+
+      if (tspan.node().getComputedTextLength() > maxWidth && line.length > 1) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        if (++lineNum < maxLines) {
+          tspan = textEl.append("tspan")
+            .attr("x", 0).attr("dy", lineHeight + "em")
+            .text(word);
+        }
+      }
+    }
+
+    // Truncate last span if overflow
+    const spans = textEl.selectAll("tspan").nodes();
+    const last  = spans[spans.length - 1];
+    if (last && words.length > 0) {
+      let t = d3.select(last).text();
+      while (last.getComputedTextLength() > maxWidth && t.length > 1) {
+        t = t.slice(0, -1);
+        d3.select(last).text(t + "…");
+      }
+    }
+  }
+</script>
+</body>
+</html>

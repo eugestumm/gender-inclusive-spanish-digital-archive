@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+<style>
+  :root{
+    --paper:#efe7d8;
+    --paper-dim:#e4dac6;
+    --ink:#231f20;
+    --ink-soft:#5b5548;
+    --rule:#c9bfa8;
+    --red:#b8433a;
+    --e-color:#c23b74;
+    --x-color:#127b7a;
+    --at-color:#c07a12;
+    --other-color:#5b4ea6;
+    --other2-color:#2f6b3c;
+    --other3-color:#8a3b8a;
+    --uni-color:#2f6b3c;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    line-height:1.5;
+  }
+  ::selection{ background: var(--e-color); color:#fff; }
+
+  /* ---------- header ---------- */
+  header{
+    max-width:960px;
+    margin:0 auto;
+    padding:64px 24px 32px;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 18px;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-optical-sizing:auto;
+    font-weight:900;
+    font-size:clamp(34px, 6vw, 58px);
+    line-height:1.02;
+    margin:0 0 22px;
+    letter-spacing:-0.01em;
+  }
+  .manuscript{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:clamp(20px, 3vw, 28px);
+    color:var(--ink-soft);
+  }
+  .manuscript .word{ position:relative; white-space:nowrap; margin-right:.35em; display:inline-block;}
+  .manuscript .strike{
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+    text-decoration-color: var(--red);
+    color: var(--ink-soft);
+  }
+  .manuscript .swap{
+    font-weight:700;
+  }
+  .manuscript .swap.e{ color:var(--e-color); }
+  .manuscript .swap.x{ color:var(--x-color); }
+  .manuscript .swap.at{ color:var(--at-color); }
+
+  .lede{
+    max-width:640px;
+    margin:26px 0 0;
+    font-size:16.5px;
+    color:var(--ink-soft);
+  }
+
+  /* ---------- sections ---------- */
+  section{
+    max-width:960px;
+    margin:0 auto;
+    padding:0 24px 56px;
+  }
+  .rule{
+    border:none;
+    border-top:1px solid var(--rule);
+    max-width:960px;
+    margin:0 auto;
+  }
+  .section-label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:.13em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:44px 0 6px;
+  }
+  h2{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:26px;
+    margin:0 0 18px;
+  }
+
+  /* ---------- controls ---------- */
+  .controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+    margin-bottom:18px;
+  }
+  .facet-block{
+    margin-top:26px;
+    padding-top:18px;
+    border-top:1px solid var(--rule);
+  }
+  .facet-label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--ink);
+    margin:0 0 12px;
+  }
+  .facet-label .dot{
+    width:8px; height:8px; border-radius:50%; flex:none;
+  }
+  .facet-label .dot.subject{ background:var(--ink-soft); }
+  .facet-label .dot.university{ background:var(--uni-color); }
+  .toggle-group{
+    display:inline-flex;
+    border:1px solid var(--ink);
+    border-radius:999px;
+    overflow:hidden;
+  }
+  .toggle-group button{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    letter-spacing:.05em;
+    background:transparent;
+    border:none;
+    color:var(--ink);
+    padding:8px 16px;
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  .toggle-group button.active{
+    background:var(--ink);
+    color:var(--paper);
+  }
+  .control-group{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .range-slider{
+    position:relative;
+    width:190px;
+    height:20px;
+  }
+  .range-slider .track-bg{
+    position:absolute;
+    top:8px;
+    left:0; right:0;
+    height:4px;
+    border-radius:2px;
+    background:var(--rule);
+  }
+  .range-slider .track-fill{
+    position:absolute;
+    top:8px;
+    height:4px;
+    border-radius:2px;
+    background:var(--e-color);
+  }
+  .range-slider input[type="range"]{
+    position:absolute;
+    top:0; left:0;
+    width:100%;
+    height:20px;
+    margin:0;
+    background:none;
+    pointer-events:none;
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  .range-slider input[type="range"]::-webkit-slider-runnable-track{
+    background:transparent;
+    height:20px;
+  }
+  .range-slider input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    pointer-events:auto;
+    width:15px; height:15px;
+    border-radius:50%;
+    background:var(--ink);
+    border:2px solid var(--paper);
+    box-shadow:0 0 0 1px var(--ink);
+    cursor:pointer;
+    margin-top:2px;
+  }
+  .range-slider input[type="range"]::-moz-range-track{
+    background:transparent;
+    height:4px;
+  }
+  .range-slider input[type="range"]::-moz-range-thumb{
+    pointer-events:auto;
+    width:15px; height:15px;
+    border-radius:50%;
+    background:var(--ink);
+    border:2px solid var(--paper);
+    box-shadow:0 0 0 1px var(--ink);
+    cursor:pointer;
+  }
+
+  .chip-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    margin:-6px 0 16px;
+  }
+  .chip{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:.02em;
+    padding:6px 12px;
+    border-radius:999px;
+    border:1px solid var(--rule);
+    background:var(--paper-dim);
+    color:var(--ink-soft);
+    cursor:pointer;
+    user-select:none;
+    transition:background .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .chip:hover{
+    border-color:var(--ink-soft);
+  }
+  .chip.active{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:var(--paper);
+  }
+  .chip.chip-uni.active{
+    background:var(--uni-color);
+    border-color:var(--uni-color);
+    color:#fff;
+  }
+
+  .select-filter{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color:var(--ink);
+    background:var(--paper);
+    border:1px solid var(--ink);
+    border-radius:6px;
+    padding:6px 10px;
+    cursor:pointer;
+    max-width:200px;
+  }
+
+  .status{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+
+  /* ---------- chart card ---------- */
+  .chart-card{
+    background:var(--paper-dim);
+    border:1px solid var(--rule);
+    border-radius:4px;
+    padding:20px 20px 8px;
+  }
+  .chart-wrap{ position:relative; height:420px; }
+  #loadingMsg, #errorMsg{
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    color:var(--ink-soft);
+    padding:40px 4px;
+  }
+  #errorMsg{ color:var(--red); display:none; }
+  #errorMsg a{ color:var(--red); }
+
+  /* legend */
+  .legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    margin:16px 2px 4px;
+  }
+  .legend-item{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px;
+    cursor:pointer;
+    user-select:none;
+    padding:4px 2px;
+    opacity:1;
+    transition:opacity .15s ease;
+  }
+  .legend-item.off{ opacity:.35; }
+  .swatch{
+    width:11px; height:11px; border-radius:2px; flex:none;
+  }
+
+  /* ---------- table ---------- */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:14px;
+  }
+  thead th{
+    text-align:left;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    border-bottom:1px solid var(--ink);
+    padding:8px 10px;
+    white-space:nowrap;
+  }
+  tbody td{
+    padding:10px 10px;
+    border-bottom:1px solid var(--rule);
+    vertical-align:top;
+  }
+  tbody tr:hover{ background:var(--paper-dim); }
+  .tag{
+    display:inline-block;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    padding:2px 7px;
+    border-radius:999px;
+    color:#fff;
+    margin:1px 3px 1px 0;
+    white-space:nowrap;
+  }
+  .tag-subject{
+    display:inline-block;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    padding:2px 7px;
+    border-radius:999px;
+    background:var(--paper);
+    border:1px solid var(--rule);
+    color:var(--ink-soft);
+    margin:1px 3px 1px 0;
+    white-space:nowrap;
+  }
+  .tag-university{
+    display:inline-block;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    padding:2px 7px;
+    border-radius:999px;
+    background:var(--paper);
+    border:1px solid var(--uni-color);
+    color:var(--uni-color);
+    margin:1px 3px 1px 0;
+    white-space:nowrap;
+  }
+  .title-link{
+    color:var(--ink);
+    text-decoration:underline;
+    text-decoration-color:var(--rule);
+    text-underline-offset:2px;
+    transition:text-decoration-color .15s ease;
+  }
+  .title-link:hover{
+    text-decoration-color:var(--e-color);
+    color:var(--e-color);
+  }
+  .yearcell{ font-family:'JetBrains Mono', monospace; }
+  .table-wrap{ max-height:520px; overflow:auto; border:1px solid var(--rule); }
+  .table-wrap table{ min-width:640px; }
+  .table-wrap thead th{ position:sticky; top:0; background:var(--paper); }
+
+  footer{
+    max-width:960px;
+    margin:0 auto;
+    padding:20px 24px 60px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    color:var(--ink-soft);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<section style="padding-top:32px;">
+  <p class="section-label">Visualization</p>
+  <h2>Usage of Neomorphemes Throughout Time</h2>
+
+  <div class="controls">
+    <div class="toggle-group" id="modeToggle">
+      <button data-mode="share" class="active">% of year</button>
+      <button data-mode="count">count</button>
+    </div>
+
+    <div class="control-group" id="yearRangeGroup" style="display:none;">
+      <span class="status" id="yearRangeLabel">—</span>
+      <div class="range-slider">
+        <div class="track-bg"></div>
+        <div class="track-fill" id="yearTrackFill"></div>
+        <input type="range" id="yearMin">
+        <input type="range" id="yearMax">
+      </div>
+    </div>
+
+    <span class="status" id="statusText">loading data…</span>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-wrap">
+      <div id="loadingMsg">requesting corpus.csv…</div>
+      <div id="errorMsg"></div>
+      <canvas id="chart" style="display:none;"></canvas>
+    </div>
+    <div class="legend" id="legend"></div>
+  </div>
+
+  <div class="facet-block" id="subjectFilterGroup" style="display:none;">
+    <p class="facet-label"><span class="dot subject"></span>Filter by subject <span style="text-transform:none; letter-spacing:0; color:var(--ink-soft); font-size:11px;">— click to toggle, click a selected chip to remove it</span></p>
+    <div class="chip-row" id="subjectChips"></div>
+    <div class="status" id="subjectBreakdown" style="margin:-8px 0 4px;"></div>
+  </div>
+
+  <div class="facet-block" id="universityFilterGroup" style="display:none;">
+    <p class="facet-label"><span class="dot university"></span>Filter by collection <span style="text-transform:none; letter-spacing:0; color:var(--ink-soft); font-size:11px;">— click to toggle, click a selected chip to remove it</span></p>
+    <div class="chip-row" id="universityChips"></div>
+    <div class="status" id="universityBreakdown" style="margin:-8px 0 4px;"></div>
+  </div>
+</section>
+
+<section>
+  <p class="section-label">Corpus</p>
+  <h2>Texts (<span id="rowCount">0</span>)</h2>
+  <div class="controls">
+    <span class="status">click a legend tag to filter the table</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Year</th>
+          <th>Title</th>
+          <th>Strategy</th>
+          <th>Subject</th>
+          <th>Collection</th>
+          <th>Location</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  Source: spreadsheet published via Google Sheets. Texts using more than one strategy are counted once for each strategy they use.
+</footer>
+
+<script>
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQAnL7-ZxHloCDaQvvmGBf1NV_MiKt9UtbUjBugYEV0WA1AxAB31w-DWBu_3u4OPPCfoCtWsUKIhqRp/pub?gid=1061084562&single=true&output=csv";
+
+// Known strategy labels + colors. Anything unseen falls back to a rotating palette.
+const KNOWN = {
+  "letra-e":  { label: "-e ending",       color: "#c23b74" },
+  "letra-x":  { label: "-x ending",       color: "#127b7a" },
+  "arroba":   { label: "@ (arroba)",      color: "#c07a12" },
+  "asterisco":{ label: "* (asterisco)",   color: "#5f3dc4" },
+};
+const FALLBACK_COLORS = ["#5b4ea6", "#2f6b3c", "#8a3b8a", "#a15c2b", "#3f6fa6"];
+
+let chart = null;
+let activeFilter = null;      // strategy key currently filtered in table, or null
+let activeSubjects = new Set();     // subjects/genres currently selected; empty = show all
+let activeUniversities = new Set(); // university/collection values currently selected; empty = show all
+let rows = [];           // raw parsed rows, each with .strategies (array) and .year (number)
+let strategyMeta = {};   // key -> {label, color}
+let currentMode = "share";
+let yearRange = { min: null, max: null }; // null = unbounded (full range)
+
+function splitField(v){
+  return (v || "")
+    .split(";")
+    .map(s => s.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+}
+
+function colorFor(key){
+  if (KNOWN[key]) return KNOWN[key].color;
+  const idx = Object.keys(strategyMeta).filter(k => !KNOWN[k]).length;
+  return FALLBACK_COLORS[idx % FALLBACK_COLORS.length];
+}
+
+function labelFor(key){
+  return KNOWN[key] ? KNOWN[key].label : key;
+}
+
+function showError(msg){
+  document.getElementById("loadingMsg").style.display = "none";
+  const el = document.getElementById("errorMsg");
+  el.style.display = "block";
+  el.innerHTML = msg;
+  document.getElementById("statusText").textContent = "error";
+}
+
+function fetchText(url){
+  return fetch(url, { cache: "no-store" }).then(res => {
+    if (!res.ok) throw new Error("HTTP " + res.status + " " + res.statusText);
+    return res.text();
+  });
+}
+
+function loadData(){
+  if (typeof Chart === "undefined"){
+    showError(
+      "The charting library (Chart.js) didn't load, so the graph can't be drawn. " +
+      "This is unrelated to the CSV — it usually means the script tag for Chart.js was blocked " +
+      "(an ad blocker, offline network, or a Content-Security-Policy restricting script sources on the host page)."
+    );
+    return;
+  }
+  // Google's published-CSV endpoint usually doesn't send Access-Control-Allow-Origin,
+  // so a direct cross-origin fetch() fails with "Failed to fetch" in most browsers.
+  // Try direct first (works if Google ever adds CORS, or if same-origin), then fall
+  // back to a CORS proxy that fetches it server-side and adds the header for us.
+  const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(CSV_URL);
+
+  fetchText(CSV_URL)
+    .catch(() => {
+      document.getElementById("statusText").textContent = "retrying via proxy…";
+      return fetchText(proxyUrl);
+    })
+    .then(text => {
+      const results = Papa.parse(text, { header: true, skipEmptyLines: true });
+      if (results.errors && results.errors.length){
+        console.warn("CSV parse warnings:", results.errors);
+      }
+      processRows(results.data);
+    })
+    .catch(err => {
+      showError(
+        "Couldn't load the CSV (" + escapeHtml(err.message || String(err)) + "), even through a CORS proxy. " +
+        "The sheet may no longer be published, or both the direct request and the proxy are being blocked " +
+        "by a Content-Security-Policy on the page this is embedded in. " +
+        "Open the source link directly to confirm the data itself is reachable: " +
+        "<a href='" + CSV_URL + "' target='_blank' rel='noopener'>view CSV</a>."
+      );
+    });
+}
+
+function processRows(data){
+  rows = [];
+  const yearRe = /\d{3,4}/;
+
+  data.forEach(r => {
+    const titleEn = (r["title-in-English"] || "").trim();
+    const titleEs = (r["title-in-Español"] || "").trim();
+    const title = titleEn || titleEs || "(untitled)";
+    const strategies = splitField(r["gender-strategy"]);
+    const subjects = splitField(r["subject-in-English"]);
+    const universities = splitField(r["university-collection"]);
+    const locEn = splitField(r["locations-in-English"]).join(", ");
+    const locEs = splitField(r["locations-in-Español"]).join(", ");
+    const location = locEn || locEs || "—";
+    const creator = (r["creator"] || "").trim();
+    const objectId = (r["objectid"] || r["objectId"] || r["ObjectId"] || r["object-id"] || "").trim();
+    const link = objectId
+      ? "https://eugestumm.github.io/Gender-Inclusive-Spanish-Digital-Archive/item.html?id=" + encodeURIComponent(objectId)
+      : null;
+    const dateRaw = (r["date"] || "").toString();
+    const m = dateRaw.match(yearRe);
+    const year = m ? parseInt(m[0], 10) : null;
+
+    if (!strategies.length || !year) return; // skip incomplete rows
+
+    strategies.forEach(s => {
+      if (!strategyMeta[s]) strategyMeta[s] = { label: labelFor(s) };
+    });
+
+    rows.push({ title, strategies, subjects, universities, location, year, creator, link });
+  });
+
+  // assign colors after all strategies are known, known ones first for stable palette
+  const orderedKeys = [
+    ...Object.keys(strategyMeta).filter(k => KNOWN[k]),
+    ...Object.keys(strategyMeta).filter(k => !KNOWN[k]).sort()
+  ];
+  orderedKeys.forEach(k => { strategyMeta[k].color = colorFor(k); });
+
+  if (!rows.length){
+    showError("The CSV downloaded but contains no usable rows.");
+    return;
+  }
+
+  document.getElementById("loadingMsg").style.display = "none";
+  document.getElementById("chart").style.display = "block";
+  document.getElementById("statusText").textContent = rows.length + " texts · " + orderedKeys.length + " strategies";
+  document.getElementById("rowCount").textContent = rows.length;
+
+  initYearSlider();
+  initSubjectFilter();
+  initUniversityFilter();
+  buildChart(orderedKeys);
+  buildLegend(orderedKeys);
+  buildTable();
+}
+
+// ---- facet predicates (year+strategy, subject, university) ----
+function passesYearStrategy(r){
+  return (yearRange.min == null || r.year >= yearRange.min) &&
+    (yearRange.max == null || r.year <= yearRange.max) &&
+    (!activeFilter || r.strategies.includes(activeFilter));
+}
+function passesSubject(r){
+  return activeSubjects.size === 0 || (r.subjects || []).some(s => activeSubjects.has(s));
+}
+function passesUniversity(r){
+  return activeUniversities.size === 0 || (r.universities || []).some(u => activeUniversities.has(u));
+}
+
+function getYearStrategyFilteredRows(){
+  return rows.filter(passesYearStrategy);
+}
+
+function getFilteredRows(){
+  return rows.filter(r => passesYearStrategy(r) && passesSubject(r) && passesUniversity(r));
+}
+
+function initSubjectFilter(){
+  const counts = new Map();
+  rows.forEach(r => (r.subjects || []).forEach(s => counts.set(s, (counts.get(s) || 0) + 1)));
+
+  if (!counts.size) return; // column absent or empty — leave control hidden
+
+  document.getElementById("subjectFilterGroup").style.display = "block";
+
+  const chipRow = document.getElementById("subjectChips");
+  chipRow.innerHTML = "";
+
+  Array.from(counts.keys())
+    .sort((a,b) => counts.get(b) - counts.get(a) || a.localeCompare(b))
+    .forEach(s => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "chip";
+    chip.dataset.subject = s;
+    chip.textContent = s + " · " + counts.get(s);
+    chip.addEventListener("click", () => {
+      if (activeSubjects.has(s)){
+        activeSubjects.delete(s);
+        chip.classList.remove("active");
+      } else {
+        activeSubjects.add(s);
+        chip.classList.add("active");
+      }
+      refreshView();
+    });
+    chipRow.appendChild(chip);
+  });
+}
+
+function initUniversityFilter(){
+  const counts = new Map();
+  rows.forEach(r => (r.universities || []).forEach(u => counts.set(u, (counts.get(u) || 0) + 1)));
+
+  if (!counts.size) return; // column absent or empty — leave control hidden
+
+  document.getElementById("universityFilterGroup").style.display = "block";
+
+  const chipRow = document.getElementById("universityChips");
+  chipRow.innerHTML = "";
+
+  Array.from(counts.keys())
+    .sort((a,b) => counts.get(b) - counts.get(a) || a.localeCompare(b))
+    .forEach(u => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "chip chip-uni";
+    chip.dataset.university = u;
+    chip.textContent = u + " · " + counts.get(u);
+    chip.addEventListener("click", () => {
+      if (activeUniversities.has(u)){
+        activeUniversities.delete(u);
+        chip.classList.remove("active");
+      } else {
+        activeUniversities.add(u);
+        chip.classList.add("active");
+      }
+      refreshView();
+    });
+    chipRow.appendChild(chip);
+  });
+}
+
+function updateSubjectBreakdown(){
+  const el = document.getElementById("subjectBreakdown");
+  if (activeSubjects.size === 0){
+    el.textContent = "";
+    return;
+  }
+  // base excludes the subject facet itself but respects year/strategy + university filters
+  const base = rows.filter(r => passesYearStrategy(r) && passesUniversity(r));
+  const parts = Array.from(activeSubjects).sort((a,b) => a.localeCompare(b)).map(s => {
+    const n = base.filter(r => (r.subjects || []).includes(s)).length;
+    return s + ": " + n;
+  });
+  el.textContent = "shown → " + parts.join(" · ");
+}
+
+function updateUniversityBreakdown(){
+  const el = document.getElementById("universityBreakdown");
+  if (activeUniversities.size === 0){
+    el.textContent = "";
+    return;
+  }
+  // base excludes the university facet itself but respects year/strategy + subject filters
+  const base = rows.filter(r => passesYearStrategy(r) && passesSubject(r));
+  const parts = Array.from(activeUniversities).sort((a,b) => a.localeCompare(b)).map(u => {
+    const n = base.filter(r => (r.universities || []).includes(u)).length;
+    return u + ": " + n;
+  });
+  el.textContent = "shown → " + parts.join(" · ");
+}
+
+function initYearSlider(){
+  const years = rows.map(r => r.year);
+  const minYear = Math.min(...years);
+  const maxYear = Math.max(...years);
+
+  if (minYear === maxYear){
+    // nothing to slide across a single year — hide the control
+    document.getElementById("yearRangeGroup").style.display = "none";
+    return;
+  }
+
+  yearRange.min = minYear;
+  yearRange.max = maxYear;
+
+  const minInput = document.getElementById("yearMin");
+  const maxInput = document.getElementById("yearMax");
+  [minInput, maxInput].forEach(el => {
+    el.min = minYear;
+    el.max = maxYear;
+    el.step = 1;
+  });
+  minInput.value = minYear;
+  maxInput.value = maxYear;
+
+  document.getElementById("yearRangeGroup").style.display = "flex";
+  updateYearUI();
+
+  minInput.addEventListener("input", () => {
+    if (+minInput.value > +maxInput.value) minInput.value = maxInput.value;
+    yearRange.min = +minInput.value;
+    updateYearUI();
+    refreshView();
+  });
+  maxInput.addEventListener("input", () => {
+    if (+maxInput.value < +minInput.value) maxInput.value = minInput.value;
+    yearRange.max = +maxInput.value;
+    updateYearUI();
+    refreshView();
+  });
+}
+
+function updateYearUI(){
+  const minInput = document.getElementById("yearMin");
+  const maxInput = document.getElementById("yearMax");
+  const lo = +minInput.min, hi = +minInput.max;
+  const pctMin = hi === lo ? 0 : (yearRange.min - lo) / (hi - lo) * 100;
+  const pctMax = hi === lo ? 100 : (yearRange.max - lo) / (hi - lo) * 100;
+
+  const fill = document.getElementById("yearTrackFill");
+  fill.style.left = pctMin + "%";
+  fill.style.width = (pctMax - pctMin) + "%";
+
+  document.getElementById("yearRangeLabel").textContent = yearRange.min + "\u2013" + yearRange.max;
+}
+
+function refreshView(){
+  const keys = window.__agg ? window.__agg.orderedKeys : Object.keys(strategyMeta);
+  buildChart(keys);
+  buildTable();
+  updateSubjectBreakdown();
+  updateUniversityBreakdown();
+
+  const total = rows.length;
+  const shown = getFilteredRows().length;
+  document.getElementById("statusText").textContent = shown === total
+    ? shown + " texts · " + keys.length + " strategies"
+    : shown + " of " + total + " texts · " + keys.length + " strategies";
+}
+
+function aggregate(orderedKeys){
+  const filteredRows = getFilteredRows();
+  const years = Array.from(new Set(filteredRows.map(r => r.year))).sort((a,b) => a-b);
+  const counts = {}; // key -> array aligned with years
+  orderedKeys.forEach(k => counts[k] = years.map(() => 0));
+
+  filteredRows.forEach(r => {
+    const yi = years.indexOf(r.year);
+    r.strategies.forEach(s => { counts[s][yi] += 1; });
+  });
+
+  const totals = years.map((_, yi) => orderedKeys.reduce((sum, k) => sum + counts[k][yi], 0));
+
+  return { years, counts, totals };
+}
+
+function buildChart(orderedKeys){
+  const { years, counts, totals } = aggregate(orderedKeys);
+  window.__agg = { years, counts, totals, orderedKeys };
+
+  const datasets = orderedKeys.map(k => ({
+    label: labelFor(k),
+    key: k,
+    data: years.map((y, yi) => currentMode === "share"
+      ? (totals[yi] ? +(100 * counts[k][yi] / totals[yi]).toFixed(1) : 0)
+      : counts[k][yi]),
+    backgroundColor: strategyMeta[k].color + "cc",
+    borderColor: strategyMeta[k].color,
+    borderWidth: 1.5,
+    fill: true,
+    tension: 0.35,
+    pointRadius: 3,
+    pointHoverRadius: 5,
+    pointBackgroundColor: strategyMeta[k].color,
+  }));
+
+  const ctx = document.getElementById("chart").getContext("2d");
+  if (chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type: "line",
+    data: { labels: years, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      scales: {
+        x: {
+          stacked: true,
+          title: { display: true, text: "Publication year", font: { family: "'JetBrains Mono', monospace", size: 11 } },
+          grid: { color: "#c9bfa855" },
+          ticks: { font: { family: "'JetBrains Mono', monospace", size: 11 } }
+        },
+        y: {
+          stacked: true,
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: currentMode === "share" ? "% of that year's texts" : "number of texts",
+            font: { family: "'JetBrains Mono', monospace", size: 11 }
+          },
+          grid: { color: "#c9bfa855" },
+          ticks: { font: { family: "'JetBrains Mono', monospace", size: 11 } }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          titleFont: { family: "'JetBrains Mono', monospace" },
+          bodyFont: { family: "'Inter', sans-serif" },
+          callbacks: {
+            label: function(ctx){
+              const suffix = currentMode === "share" ? "%" : " texts";
+              return " " + ctx.dataset.label + ": " + ctx.parsed.y + suffix;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function buildLegend(orderedKeys){
+  const el = document.getElementById("legend");
+  el.innerHTML = "";
+  orderedKeys.forEach(k => {
+    const item = document.createElement("div");
+    item.className = "legend-item";
+    item.dataset.key = k;
+    item.innerHTML = '<span class="swatch" style="background:' + strategyMeta[k].color + '"></span>' + labelFor(k);
+    item.addEventListener("click", () => {
+      if (activeFilter === k){
+        activeFilter = null;
+        item.classList.remove("active-filter");
+        document.querySelectorAll(".legend-item").forEach(li => li.classList.remove("off"));
+      } else {
+        activeFilter = k;
+        document.querySelectorAll(".legend-item").forEach(li => {
+          li.classList.toggle("off", li.dataset.key !== k);
+        });
+      }
+      refreshView();
+    });
+    el.appendChild(item);
+  });
+}
+
+function buildTable(){
+  const body = document.getElementById("tableBody");
+  body.innerHTML = "";
+  const filtered = getFilteredRows();
+
+  const sorted = [...filtered].sort((a,b) => b.year - a.year);
+
+  sorted.forEach(r => {
+    const tr = document.createElement("tr");
+    const tagsHtml = r.strategies.map(s =>
+      '<span class="tag" style="background:' + (strategyMeta[s] ? strategyMeta[s].color : "#888") + '">' + labelFor(s) + '</span>'
+    ).join("");
+    const subjectHtml = (r.subjects && r.subjects.length)
+      ? r.subjects.map(s => '<span class="tag-subject">' + escapeHtml(s) + '</span>').join("")
+      : "—";
+    const universityHtml = (r.universities && r.universities.length)
+      ? r.universities.map(u => '<span class="tag-university">' + escapeHtml(u) + '</span>').join("")
+      : "—";
+    const titleHtml = r.link
+      ? '<a class="title-link" href="' + r.link + '" target="_blank" rel="noopener">' + escapeHtml(r.title) + '</a>'
+      : escapeHtml(r.title);
+    tr.innerHTML =
+      '<td class="yearcell">' + r.year + '</td>' +
+      '<td>' + titleHtml + '</td>' +
+      '<td>' + tagsHtml + '</td>' +
+      '<td>' + subjectHtml + '</td>' +
+      '<td>' + universityHtml + '</td>' +
+      '<td>' + escapeHtml(r.location) + '</td>';
+    body.appendChild(tr);
+  });
+
+  document.getElementById("rowCount").textContent = filtered.length;
+}
+
+function escapeHtml(str){
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+document.getElementById("modeToggle").addEventListener("click", (e) => {
+  const btn = e.target.closest("button");
+  if (!btn) return;
+  currentMode = btn.dataset.mode;
+  document.querySelectorAll("#modeToggle button").forEach(b => b.classList.toggle("active", b === btn));
+  refreshView();
+});
+
+loadData();
+</script>
+
+</body>
+</html>

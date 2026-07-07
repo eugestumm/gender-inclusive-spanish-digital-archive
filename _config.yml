@@ -1,7 +1,7 @@
 ##########
-# collectionbuilder-sheets
+# collectionbuilder-gh
 # Jekyll Digital Collection Generator, designed for GitHub Pages
-# https://github.com/CollectionBuilder/collectionbuilder-sheets
+# https://github.com/CollectionBuilder/collectionbuilder-gh
 ##########
 
 ##########
@@ -9,51 +9,92 @@
 #
 # url is site domain, full URL to the production location of your collection
 # on GitHub Pages follows the pattern username.github.io
-#url: https://collectionbuilder.github.io 
+url: https://eugestumm.github.io
 # baseurl is path to location on the domain if necessary e.g. /digital/hjccc
 # on GitHub Pages it is your github repository's name prefixed with a /
-#baseurl: /collectionbuilder-gh 
+baseurl: /CollectionBuilder-Remix
 # location of code, the full url to your github repository
-source-code: https://github.com/CollectionBuilder/collectionbuilder-sheets
+source-code: https://github.com/eugestumm/CollectionBuilder-Remix
 
 ##########
 # SITE SETTINGS
 #
 # title of site appears in banner
 title: Gender-Inclusive Spanish Digital Archive
+
 # tagline, a short phrase that will appear throughout the site in the top banner
-tagline: A Free and Open-Access Compilation of Resources in Gender Inclusive Spanish
+tagline: A Free and Open-Access Compilation of Resources in Gender Inclusive 
+  Spanish
 # description appears in meta tags and other locations
 # this description might appear in search result lists, keep around 160 characters max
-description: "The Gender-Inclusive Spanish Digital Archive is Digital Humanities project tracing the emergence of gender-inclusive Spanish through the colonial period, where condition of possibility of its creation was planted, and into modern times, where cultural productions that use gender-inclusive Spanish are themselves a form of resistence to this coloniality.
-"
+description: "The Gender-Inclusive Spanish Digital Archive is Digital Humanities project
+  tracing the emergence of gender-inclusive Spanish through the colonial period, where
+  condition of possibility of its creation was planted, and into modern times, where
+  cultural productions that use gender-inclusive Spanish are themselves a form of
+  resistence to this coloniality."
 # creator of the digital collection, to appear in meta tags; we typically use our GitHub usernames but feel free to just use your name
-author: Euge Stumm and Ben Papadopoulos
+author: Euge Stumm
+
+# Set up site language ids and display names. First language will be the site's default language
+site_languages:
+- lang_id: en
+  lang_display: English
+- lang_id: es
+  lang_display: Español
+  lang_site_title: Archivo Digital de Español No Binario
+  lang_site_tagline: Una Compilación Gratuita y de Acceso Abierto de Recursos en
+    Español No Binario
+  lang_site_description: "El Archivo Digital de Español No Binario es un proyecto
+    de Humanidades Digitales que rastrea el surgimiento del español inclusivo de género
+    a través del período colonial, donde se sembraron las condiciones de posibilidad
+    para su creación, hasta llegar a la época moderna, donde las producciones culturales
+    que utilizan el español inclusivo de género son en sí mismas una forma de resistencia
+    a esta colonialidad."
+# Set paths, language ids, and permalinks for pages
+defaults:
+- scope:
+    path: 'es'
+  values:
+    permalink: /es/:basename
+    lang: 'es'
+- scope:
+    path: 'pages'
+  values:
+    lang: 'en'
 
 ##########
 # COLLECTION SETTINGS
 #
-# Set the metadata for your collection 
-# This will be the full URL to your CSV file or relative path + filename of CSV in this repository 
-# e.g. relative path "/assets/demo-metadata.csv"
-# e.g. published google sheet "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn7AA-cbsXT3_nNUGftc1ab-CKXOJHMQCIENeR9NHElbyI9_qA99o0-HNZdG04v-M2_N21bUe_krQQ/pub?output=csv"
-# e.g. on GitHub use the raw link "https://raw.githubusercontent.com/CollectionBuilder/collectionbuilder-sample-data/main/psychiana_cbdemo_gh.csv"
-metadata-csv: https://docs.google.com/spreadsheets/d/e/2PACX-1vTE0KMb-D9CEEY1XiPfLiGEXk3IpBLlzR0xoc1mAkEzJUyilyvSb_akggzcBF4hzRyeiw1nHOOnQ_vb/pub?output=csv
+# Set the metadata for your collection (the name of the csv file in your _data directory that describes the objects in your collection) 
+# Use the filename of your CSV **without** the ".csv" extension! E.g. _data/demo-metadata.csv --> "demo-metadata"
+metadata: main-metadata
+
 
 ##########
 # Site/Organization Branding 
-# 
-# Uncomment these and enter information for your organization (replacing the CDIL links and name below) if you'd like to brand your site with a logo
-# organization-name: "Center for Digital Inquiry and Learning (CDIL)"
-# organization-link: https://cdil.lib.uidaho.edu/
-# organization-logo-banner: https://cdil.lib.uidaho.edu/storying-extinction/assets/img/cdil.png
-# organization-logo-nav: https://cdil.lib.uidaho.edu/assets/img/logo.png
+#   Uncomment these and enter information for your organization (replacing the CDIL links and name below) if you'd like to brand your site with a logo
+#
+#organization-name: "Arte Público Press"
+#organization-link: https://artepublicopress.com/
+#organization-logo-banner: /assets/img/APP_Logo_2019.png
+#organization-logo-nav: /assets/img/app_logo_white_sm.png
+
+
+##########
+# GOOGLE SERVICES [optional!]
+#
+# leave these blank or comment out to NOT include google code. See docs/google.md
+#
+# Add your google-analytics-id to automatically add the embed code, e.g. "G-123XXXXXX"
+# google-analytics-id:
+# to populate a Google CSE add the id, e.g. "002151703305773322890:1pu3smhw1t8"
+# google-cse-id: 
 
 ##########
 # ROBOTS EXCLUDE
 #
 # set noindex to true if you do NOT want Google to index your site
-# noindex: true 
+noindex: false
 
 ##########
 # BUILD SETTINGS 
@@ -62,10 +103,9 @@ metadata-csv: https://docs.google.com/spreadsheets/d/e/2PACX-1vTE0KMb-D9CEEY1XiP
 # JEKYLL_ENV=production jekyll build
 # (this is done automatically by gh-pages build)
 #
-# dev mode turns on ability to change metadata
-development-mode: true
 # ignore stuff
-exclude: [docs/, Rakefile, README.md, LICENSE]
+exclude: [docs/, Rakefile, README.md, LICENSE, CITATION.cff, CODE_OF_CONDUCT.md, 
+    CONTRIBUTING.md]
 # compress CSS output
 sass:
   style: compressed

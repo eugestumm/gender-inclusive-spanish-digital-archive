@@ -1,16 +1,19 @@
-display_name,stub,dropdown_parent
-Home,/
-Browse,/browse.html
-Subjects,/subjects.html
-Locations,/locations.html
-Map,/map.html
-Timeline,/timeline.html
-Data,/data.html
-About,,
-About this project,/about.html,About
-Method,/method.html,About
-Contribute,/contribute.html,About
-How to Cite,/how-to-cite.html,About
-Learn,,
-Gender in Spanish,https://www.genderinlanguage.com/spanish,Learn
-How to Use Non-Binary Spanish,https://www.genderinlanguage.com/spanish/how,Learn
+translate_id_nav,stub,dropdown_parent
+nav-home,/
+nav-browse,/browse.html
+nav-visualization
+nav-use-of-neomorphemes-over-time,/neomorphemes-over-time.html,nav-visualization
+nav-tags
+nav-subjects,/subjects.html,nav-tags
+nav-locations,/locations.html,nav-tags
+nav-map,/map.html
+nav-timeline,/timeline.html
+nav-data,/data.html
+nav-about
+nav-about-this-project,/about.html,nav-about
+nav-method,/method.html,nav-about
+nav-how-to-cite,/how-to-cite.html,nav-about
+nav-contribute,/contribute.html,nav-about
+nav-learn
+nav-gender-in-spanish,https://www.genderinlanguage.com/spanish,nav-learn
+nav-on-gender-inclusive-spanish,https://www.genderinlanguage.com/spanish/how,nav-on-gender-inclusive-spanish

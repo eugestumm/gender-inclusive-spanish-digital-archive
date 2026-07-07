@@ -2,7 +2,6 @@
 title: How to Cite
 layout: page
 permalink: /how-to-cite.html
-# page explaining how to cite
 ---
 
 # How to Cite
@@ -25,4 +24,3 @@ STUMM, Euge; PAPADOPOULOS, Ben. *Gender-Inclusive Spanish Digital Archive*. 2025
 ## This project was featured in the following publications:
 
 * TBD
-

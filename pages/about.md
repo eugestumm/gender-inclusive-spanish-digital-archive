@@ -2,15 +2,10 @@
 title: About
 layout: about
 permalink: /about.html
-# include CollectionBuilder info at bottom
 credits: true
-# Edit the markdown on in this file to describe your collection
-# Look in _includes/feature for options to easily add features to the page
 ---
 
-{% include feature/jumbotron.html objectid="/assets/img/jj-ying-WmnsGyaFnCQ-unsplash_opt.jpg" %}
-
-## About This Project
+# About This Project
 
 The Gender-Inclusive Spanish Digital Archive was constructed by [Euge Stumm](https://eugestumm.github.io/) and [Ben Papadopoulos](https://www.benpapadopoulos.com/). The first version of this project featured the <a href="https://sections.lasaweb.org/sections/sexualities-studies/show.php?type=news&id=692&pg=2">Workshop on Alliances: Gender-Inclusive Language, History, and the Struggle against Colonialism</a> at the [Sexuality Studies](https://sections.lasaweb.org/sections/sexualities-studies) section of the [Latin American Studies Association](https://lasaweb.org/en). This [Digital Humanities](https://en.wikipedia.org/wiki/Digital_humanities) project provides participants with interactive temporal and spatial visualizations of Spanish-speaking cultural productions featuring gender-inclusive forms, as well as its theoretical underpinnings centered around colonialism and related forms of oppression, ranging from colonial to contemporary times. Our primary resources include colonial language documents, art, zines, poetry, theses, manifestos, short stories, novels, and videos. You may view the Archive [spatially](https://eugestumm.github.io/gender-inclusive-spanish-digital-archive/map.html) or [temporally](https://eugestumm.github.io/gender-inclusive-spanish-digital-archive/timeline.html) and a full list of the data with descriptions may be located [here](https://eugestumm.github.io/gender-inclusive-spanish-digital-archive/data.html).
 
@@ -24,6 +19,4 @@ The Gender-Inclusive Spanish Digital Archive was constructed by [Euge Stumm](htt
 
 ## About This Website
 
-This site is generated using [CollectionBuilder-Sheets](https://github.com/CollectionBuilder/collectionbuilder-sheets), a template  for creating simple digital exhibit websites by loading collection metadata directly from a CSV, designed for teaching digital library skills and easy hosting on GitHub Pages.
-
-
+This site is generated using [CollectionBuilder-Remix](https://github.com/eugestumm/CollectionBuilder-Remix), a template for creating simple digital exhibit websites by loading collection metadata directly from Google Spreadsheets.
