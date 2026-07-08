@@ -1,9 +1,9 @@
 field,translate_id_table,lang
-#NAME?,metadata-title,#NAME?
+title,metadata-title,en
 title-es,metadata-title,es
-date,metadata-date,#NAME?
-#NAME?,metadata-description,#NAME?
+date,metadata-date,en;es
+description-en,metadata-description,en
 description-es,metadata-description,es
-#NAME?,metadata-subject,#NAME?
+subject-en,metadata-subject,en
 subject-es,metadata-subject,es
-gender-strategy,metadata-gender-strategy,#NAME?
+gender-strategy,metadata-gender-strategy,en;es

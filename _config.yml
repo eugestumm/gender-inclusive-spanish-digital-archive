@@ -38,8 +38,8 @@ author: Euge Stumm
 
 # Set up site language ids and display names. First language will be the site's default language
 site_languages:
-- lang_id: '#NAME?'
-  lang_display: '#NAME?'
+- lang_id: 'en'
+  lang_display: 'English'
 - lang_id: 'es'
   lang_display: 'Spanish'
   lang_site_title: Archivo Digital de Español No Binario

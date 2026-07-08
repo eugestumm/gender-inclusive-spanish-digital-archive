@@ -23,14 +23,14 @@ browse-buttons: '1'  # true/false, adds previous/next arrows to item pages
 ##########
 # SUBJECTS PAGE
 #
-subjects-fields: '#NAME?'              # set the field to be featured in the cloud (if left blank, none will be generated)
+subjects-fields: 'subject-en;subject-es' # set the field to be featured in the cloud (if left blank, none will be generated)
 subjects-min: '1' # min size for subject cloud, too many terms = slow load time!
 subjects-stopwords: # boxers;boxing;boxer # set of subjects separated by ;, e.g. boxers;boxing
 
 ##########
 # LOCATIONS PAGE
 #
-locations-fields: '#NAME?'                  # set the field to be featured in the cloud
+locations-fields: 'locations_en;locations_es' # set the field to be featured in the cloud
 locations-min: '1' # min size for subject cloud, too many terms = slow load time!
 locations-stopwords: # set of subjects separated by ; that will be removed from display, e.g. boxers;boxing
 
@@ -59,9 +59,9 @@ year-nav-increment: '5' # set increments when auto gen nav years
 #
 # add metadata fields for export in data downloads (tip: paste in first row of csv)
 # comma delimited list, reference url is automatic
-metadata-export-fields: "#NAME?"
+metadata-export-fields: "title,objectid,filename,title-es,creator,gender-strategy,description-en,description-es,date,locations_en,locations_es,LND_or_LNI,subject-en,subject-es,language,university-collection,source,format,type,rights,rightsstatement,parentid,image_thumb,vimeoid,youtubeid"
 # generate a facets list for given fields, comma delimited
-metadata-facets-fields: "#NAME?"
+metadata-facets-fields: "subject-en;subject-es"
 
 ##########
 # COMPOUND OBJECTS
