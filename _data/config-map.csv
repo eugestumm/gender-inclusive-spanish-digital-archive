@@ -1,4 +1,4 @@
 field,translate_id_map,lang,search
 date,metadata-date,#NAME?,true
 #NAME?,metadata-subject,#NAME?,true
-#NAME?,metadata-subject,#NAME?,true
+subject-es,metadata-subject,es,true

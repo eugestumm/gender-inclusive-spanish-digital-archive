@@ -1,9 +1,9 @@
 field,translate_id_browse,lang,btn,hidden,translate_id_sort_name
 date,metadata-date,#NAME?,,,metadata-date
 #NAME?,metadata-subject,#NAME?,true
-#NAME?,metadata-subject,#NAME?,true
+subject-es,metadata-subject,es,true
 #NAME?,metadata-location,#NAME?,true
-#NAME?,metadata-location,#NAME?,true
+locations_es,metadata-location,es,true
 language,metadata-language,#NAME?,true
 creator,metadata-creator,#NAME?,true
 gender-strategy,metadata-gender-strategy,#NAME?,true

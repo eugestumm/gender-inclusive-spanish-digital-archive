@@ -1,11 +1,11 @@
 field,lang,index,display
 #NAME?,#NAME?,true,true
-#NAME?,#NAME?,true,true
+title-es,es,true,true
 date,#NAME?,true,true
 #NAME?,#NAME?,true,true
+description-es,es,true,true
 #NAME?,#NAME?,true,true
-#NAME?,#NAME?,true,true
-#NAME?,#NAME?,true,true
+subject-es,es,true,true
 #NAME?,#NAME?,true,false
-#NAME?,#NAME?,true,false
+location-es,es,true,false
 gender-strategy,#NAME?,true,true
