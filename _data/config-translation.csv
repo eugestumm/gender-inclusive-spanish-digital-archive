@@ -128,7 +128,8 @@ metadata-rights,Rights field in metadata,Rights,Derechos
 metadata-rightsstatement,Rights Statement field in metadata,Rights Statement,Declaración de derechos
 metadata-tags,Tags field in metadata,Tags,Etiquetas
 metadata-language,Language field in metadata,Language,Idioma
-metadata-gender-strategy,Type of gender strategy used,Neomorphemes,Neomorfemas
+metadata-gender-strategy,Type of gender inclusive neomorpheme used,Neomorphemes,Neomorfemas
+metadata-lnd-or-lni,Type of gender strategy used,Direct or Indirect Gender-Inclusive Spanish,Español No Binario Directo o Indirecto
 nav-about,Navigation menu About,About,Sobre
 nav-about-this-project,Navigation menu About this project,About This Project,Sobre Este Proyecto
 nav-method,Navigation menu Method,Method,Método
