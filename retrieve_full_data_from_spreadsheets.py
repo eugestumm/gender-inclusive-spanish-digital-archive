@@ -17,6 +17,7 @@ memory / onto disk:
        - "translation"                       -> exported to _data/config-translation.csv
        - "pages"                             -> kept in memory only
        - "config"                            -> kept in memory only
+       - "config-theme"                             -> kept in memory only
   3. Hands each sheet's data off to a dedicated script in CB-Remix-scripts/,
      each doing exactly one job:
        - CB-Remix-scripts/export_metadata_csv.py               -> cleans + writes
@@ -39,6 +40,17 @@ memory / onto disk:
        - CB-Remix-scripts/export_translation_csv.py            -> cleans + writes
          the translation sheet to _data/config-translation.csv
        - CB-Remix-scripts/update_config_yml.py                 -> patches _config.yml
+       - CB-Remix-scripts/export_theme.py                  -> patches
+         _data/_theme.yml from the "config-theme" sheet (also needs the "config"
+         sheet, to resolve "-in-<language name>" tokens in fields like
+         subjects-fields/locations-fields/metadata-export-fields/
+         metadata-facets-fields — see that script's docstring)
+       - CB-Remix-scripts/update_home_infographic.py           -> patches
+         _includes/home-infographic.html so its bilingual
+         featured-terms "field=" attributes point at the CURRENT
+         lang1-id/lang2-id from the "config" sheet, instead of whatever
+         language codes happened to be hardcoded in that file before
+         (see that script's docstring)
        - CB-Remix-scripts/build_pages_from_sheet.py            -> writes markdown pages
   4. Launches Jekyll via: jekyll serve
      (skipped if run with --no-serve, e.g. in CI/GitHub Actions, where a
@@ -50,10 +62,11 @@ scripts instead, so each can be edited/iterated on independently of this
 retrieval script and of each other.
 
 NOTE: This script's spreadsheet-reading logic is kept in sync by hand with
-download_csv.py (the local dev entry point). The two exist separately only
-because this one skips `jekyll serve` for CI — everything upstream of that
-(URL resolution, sheet reading, config-first loading, exporter wiring)
-should always match download_csv.py. If you change one, change the other.
+run_updates.py (the local dev entry point). The two exist separately only
+because this one skips `jekyll serve` for CI (and lets GitHub Pages build
+the site on its own) — everything upstream of that (URL resolution, sheet
+reading, config-first loading, exporter wiring, theme/infographic patching)
+should always match run_updates.py. If you change one, change the other.
 
 Dependencies (install once):
     pip install requests pandas odfpy ruamel.yaml
@@ -94,6 +107,8 @@ _SCRIPTS_DIR = pathlib.Path(__file__).resolve().parent / "CB-Remix-scripts"
 sys.path.insert(0, str(_SCRIPTS_DIR))
 try:
     from update_config_yml import update_config_yml
+    from export_theme import export_theme
+    from update_home_infographic import update_home_infographic
     from build_pages_from_sheet import build_pages_from_sheet
     from export_metadata_csv import export_metadata_csv
     from export_navbar_csv import export_navbar_csv
@@ -110,6 +125,8 @@ except ImportError as exc:
         f"        Make sure the following exist next to this script, inside\n"
         f"        CB-Remix-scripts/:\n"
         f"          update_config_yml.py\n"
+        f"          export_theme.py\n"
+        f"          update_home_infographic.py\n"
         f"          build_pages_from_sheet.py\n"
         f"          export_metadata_csv.py\n"
         f"          export_navbar_csv.py\n"
@@ -165,12 +182,26 @@ SHEETS_NEEDING_CONFIG = {
 
 # Sheets that are only kept in memory (as DataFrames) for later use — not
 # written to disk.
-MEMORY_ONLY_SHEETS = ["pages", "config"]
+MEMORY_ONLY_SHEETS = ["pages", "config", "config-theme"]
 
 # _config.yml gets its fields patched from the "config" sheet, whose columns
 # are named as below (case-insensitive match against these).
 CONFIG_YML_PATH = "_config.yml"
 CONFIG_SHEET_NAME = "config"
+
+# _data/_theme.yml gets its fields patched from the "config-theme" sheet. Some of
+# those fields (subjects-fields, locations-fields, metadata-export-fields,
+# metadata-facets-fields) use "-in-<language name>" tokens that need the
+# "config" sheet's lang1/lang2/lang1-id/lang2-id to resolve — see
+# export_theme.py's docstring.
+THEME_YML_PATH = "_data/theme.yml"
+THEME_SHEET_NAME = "config-theme"
+
+# _layouts/home-infographic.html has hardcoded bilingual
+# featured-terms "field=" attributes (e.g. "subject-en;subject-pt") that
+# need to track the "config" sheet's current lang1-id/lang2-id — see
+# update_home_infographic.py's docstring.
+HOME_INFOGRAPHIC_PATH = "_layouts/home-infographic.html"
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -323,7 +354,7 @@ def read_sheet(ods_path: pathlib.Path, sheet_name: str) -> pd.DataFrame:
 
 def clean_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     """Apply the generic cleanup rule shared by the memory-only sheets
-    (pages, config): blank out literal "0" everywhere.
+    (pages, config, config-theme): blank out literal "0" everywhere.
 
     No column in these sheets legitimately contains a literal 0 — every
     occurrence comes from formulas resolving blank source cells to 0.
@@ -354,6 +385,11 @@ def load_all_sheets(ods_path: pathlib.Path, output_dir: pathlib.Path) -> dict:
     sheet's dynamic "field" values (e.g. "title-in-English") into the
     literal field names Jekyll expects (e.g. "title"). See that script's
     docstring for the full explanation.
+
+    "config-theme" is also a memory-only sheet (see MEMORY_ONLY_SHEETS) — it
+    doesn't need to be loaded early like "config" does, since
+    export_theme() is only called later in main(), after
+    load_all_sheets() has already returned.
 
     Returns a dict of {sheet_name: DataFrame} covering all loaded sheets.
     """
@@ -410,6 +446,15 @@ def main():
     # From here on, everything works off the in-memory DataFrames above —
     # no further contact with the spreadsheet this run.
     update_config_yml(pathlib.Path.cwd() / CONFIG_YML_PATH, dataframes[CONFIG_SHEET_NAME])
+    export_theme(
+        pathlib.Path.cwd() / THEME_YML_PATH,
+        dataframes[THEME_SHEET_NAME],
+        dataframes[CONFIG_SHEET_NAME],
+    )
+    update_home_infographic(
+        pathlib.Path.cwd() / HOME_INFOGRAPHIC_PATH,
+        dataframes[CONFIG_SHEET_NAME],
+    )
     build_pages_from_sheet(dataframes["pages"], dataframes[CONFIG_SHEET_NAME], base_dir=pathlib.Path.cwd())
 
     if args.no_serve:
