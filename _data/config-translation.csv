@@ -1,4 +1,4 @@
-translate_id,description,en,es,
+translate_id,description,#NAME?,#NAME?
 nav-home,Navigation menu Home option,Home,Inicio
 nav-browse,Navigation menu Browse option,Browse,Búsqueda
 nav-map,Navigation menu Map option,Map,Mapa
@@ -8,14 +8,14 @@ nav-subjects,Home top subjects card title,Top Subjects,Categorías
 nav-locations,Home top locations card title,Top Locations,Ubicaciones
 nav-tags,Navigation menu Tags option,Tags,Etiquetas
 home-featured-image,Home featured image button,Featured Image,Foto principal
-home-description,Home description card title,Description,Descrição
-home-learn,Home learn more button,Learn More,Saiba mais
-home-carousel-items,Home carousel card title,Sample Items,Amostra de itens
-home-view-item,Home carousel view item button,View Item,Ver item
-home-time,Home time span card title,Time Span,Intervalo de tempo
-home-timeline,Home time span button,View Timeline,Ver cronologia
-home-subjects,Home top subjects card title,Top Subjects,Categorias principais
-home-locations,Home top locations card title,Top Locations,Localizações principais
+home-description,Home description card title,Description,Descripción
+home-learn,Home learn more button,Learn More,Aprende más
+home-carousel-items,Home carousel card title,Sample Items,Artículos de muestra
+home-view-item,Home carousel view item button,View Item,Ver ítem
+home-time,Home time span card title,Time Span,Espacio de tiempo
+home-timeline,Home time span button,View Timeline,Ver cronología
+home-subjects,Home top subjects card title,Top Subjects,Categorías principales
+home-locations,Home top locations card title,Top Locations,Ubicaciones
 home-objects,Home objects card title,Objects,Objetos
 home-objects-images,Home objects card images button,Images,Imágenes
 home-objects-audio,Home objects card audio button,Audio Files,Archivos de sonido
@@ -47,7 +47,7 @@ item-download,Download,Download,Descargar
 item-download-image,Item page image download button,Download Image,Descargar imagen
 item-pdf-render,Instructions for PDF not rendering on item page,The PDF is not rendering in your browser. Please use the button below to download the PDF.,El PDF no se muestra en su navegador. Utilice el botón de abajo para descargar el PDF.
 item-download-pdf,Item page pdf download button,Download PDF,Descargar PDF
-item-audio-support,Notification that browser does not support audio on item page,Your browser does not support the audio element. Please download the audio file.,Su navegador no es compatible con el elemento de audio. Por favor descargue el archivo de audio.,baixe o arquivo de áudio.
+item-audio-support,Notification that browser does not support audio on item page,Your browser does not support the audio element. Please download the audio file.,Su navegador no es compatible con el elemento de audio. Por favor descargue el archivo de audio.
 item-download-audio,Item page audio download button,Download Audio File,Descargar archivo de audio
 item-view-youtube,Item page youtube view button,View on Youtube,Ver en Youtube
 item-view-vimeo,Item page vimeo view button,View on Vimeo,Ver en Vimeo
