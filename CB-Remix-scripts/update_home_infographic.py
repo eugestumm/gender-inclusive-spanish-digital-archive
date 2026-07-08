@@ -129,7 +129,7 @@ def update_home_infographic(html_path, config_df=None):
     # the first half, so e.g. "subject-en;subject-pt" matches but
     # "subject-en;locations_pt" (mismatched base/sep) would not.
     FIELD_PAIR_PATTERN = re.compile(
-        r'field="([\w-]+?)([-_])([A-Za-z]+);\1\2([A-Za-z]+)"'
+        r'field="([\w-]+?)([-_])([^;"]+);\1\2([^;"]+)"'
     )
 
     replaced_count = 0
