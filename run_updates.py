@@ -44,6 +44,12 @@ retrieving the spreadsheet and getting its data into memory / onto disk:
          sheet, to resolve "-in-<language name>" tokens in fields like
          subjects-fields/locations-fields/metadata-export-fields/
          metadata-facets-fields — see that script's docstring)
+       - CB-Remix-scripts/update_home_infographic.py           -> patches
+         _includes/home-infographic.html so its bilingual
+         featured-terms "field=" attributes point at the CURRENT
+         lang1-id/lang2-id from the "config" sheet, instead of whatever
+         language codes happened to be hardcoded in that file before
+         (see that script's docstring)
        - CB-Remix-scripts/build_pages_from_sheet.py            -> writes markdown pages
 
 All of the "what do we do with this data" logic lives in those sibling
@@ -54,7 +60,7 @@ Dependencies (install once):
     pip install requests pandas odfpy ruamel.yaml
 
 Usage:
-    python download_csv.py
+    python run_updates.py
 """
 
 import os
@@ -89,6 +95,7 @@ sys.path.insert(0, str(_SCRIPTS_DIR))
 try:
     from update_config_yml import update_config_yml
     from export_theme import export_theme
+    from update_home_infographic import update_home_infographic
     from build_pages_from_sheet import build_pages_from_sheet
     from export_metadata_csv import export_metadata_csv
     from export_navbar_csv import export_navbar_csv
@@ -106,6 +113,7 @@ except ImportError as exc:
         f"        CB-Remix-scripts/:\n"
         f"          update_config_yml.py\n"
         f"          export_theme.py\n"
+        f"          update_home_infographic.py\n"
         f"          build_pages_from_sheet.py\n"
         f"          export_metadata_csv.py\n"
         f"          export_navbar_csv.py\n"
@@ -173,6 +181,12 @@ CONFIG_SHEET_NAME = "config"
 # export_theme.py's docstring.
 THEME_YML_PATH = "_data/theme.yml"
 THEME_SHEET_NAME = "config-theme"
+
+# _layouts/home-infographic.html has hardcoded bilingual
+# featured-terms "field=" attributes (e.g. "subject-en;subject-pt") that
+# need to track the "config" sheet's current lang1-id/lang2-id — see
+# update_home_infographic.py's docstring.
+HOME_INFOGRAPHIC_PATH = "_layouts/home-infographic.html"
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -407,6 +421,10 @@ def main():
     export_theme(
         pathlib.Path.cwd() / THEME_YML_PATH,
         dataframes[THEME_SHEET_NAME],
+        dataframes[CONFIG_SHEET_NAME],
+    )
+    update_home_infographic(
+        pathlib.Path.cwd() / HOME_INFOGRAPHIC_PATH,
         dataframes[CONFIG_SHEET_NAME],
     )
     build_pages_from_sheet(dataframes["pages"], dataframes[CONFIG_SHEET_NAME], base_dir=pathlib.Path.cwd())
