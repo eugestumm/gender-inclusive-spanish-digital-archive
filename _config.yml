@@ -41,7 +41,7 @@ site_languages:
 - lang_id: 'en'
   lang_display: 'English'
 - lang_id: 'es'
-  lang_display: 'Spanish'
+  lang_display: 'Español'
   lang_site_title: Archivo Digital de Español No Binario
   lang_site_tagline: Una Compilación Gratuita y de Acceso Abierto de Recursos en
     Español No Binario
