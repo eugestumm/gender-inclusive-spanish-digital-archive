@@ -1,0 +1,46 @@
+name: Sync content from spreadsheet
+
+# This workflow only runs download_csv.py to pull the latest data from the
+# Google Sheet, regenerate _data/books-metadata.csv, _config.yml, and the
+# markdown pages, then commits those changes back to the repo. It does NOT
+# build or serve the Jekyll site — GitHub Pages handles that on its own
+# whenever it sees new commits on the branch it's configured to deploy from.
+"on":
+  # Manual trigger: click "Run workflow" in the Actions tab any time you
+  # want to pull the latest spreadsheet content on demand.
+  workflow_dispatch:
+
+  # Optional: run automatically on a schedule (uncomment to enable).
+  # Cron is in UTC. This example runs once a day at 06:00 UTC.
+  # schedule:
+  #   - cron: "0 6 * * *"
+
+permissions:
+  contents: write # needed so the workflow can commit and push the regenerated files
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests pandas odfpy ruamel.yaml
+
+      - name: Run spreadsheet sync (no Jekyll serve)
+        run: python retrieve_full_data_from_spreadsheets.py --no-serve
+
+      - name: Commit and push changes, if any
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --staged --quiet || git commit -m "Sync content from spreadsheet [automated]"
+          git push
