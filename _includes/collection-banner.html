@@ -19,7 +19,7 @@
 }
 </style>
 <div id="home-banner" class="container-fluid mb-0 p-0">
-    {% if languageNumber >= 2 %}
+    {% if languageNumber >= 2 and site.site_languages[1].lang_id != 'none' %}
     <div class="d-flex justify-content-end">
         {% include language-button.html %}
     </div>
@@ -40,7 +40,7 @@
     </div>
 </div>
 {%- else -%}
-{% if languageNumber >= 2 %}
+{% if languageNumber >= 2 and site.site_languages[1].lang_id != 'none' %}
 <div class="d-flex justify-content-end">
     <div class="banner-buttons">
         {% include language-button.html %}
