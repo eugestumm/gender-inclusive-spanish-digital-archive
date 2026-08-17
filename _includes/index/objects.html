@@ -1,5 +1,5 @@
 {%- assign formats = site.data[site.metadata] | where_exp: 'item','item.parentid == nil' | map: "format" -%}
-{%- assign types = "image;audio;video;pdf;record;compound_object;multiple" | split: ";" -%}
+{%- assign types = "image;audio;video;pdf;record;compound_object;multiple;application/html" | split: ";" -%}
 <div class="card mb-3" >
     <div class="card-body">
         <h5 class="card-title">{% include translate.html id="home-objects" default="Objects" %}</h5>
@@ -23,6 +23,8 @@
             <a class="text-dark" href="{% if page.lang != site.site_languages[0]['lang_id'] %}{{ 'compound_object' | prepend: '/browse.html#' | prepend: page.lang | prepend: '/' | relative_url }}{% else %}{{ 'pdf' | prepend: '/browse.html#' | relative_url }}{% endif %}">{% include translate.html id="home-objects-compound" default="Compound Objects" %} <svg class="bi icon-sprite text-body" fill="currentColor" aria-hidden="true"><use xlink:href="{{ '/assets/lib/cb-icons.svg' | relative_url }}#icon-compound-object"/></svg></a><br>
             {% when 'multiple' %}
             <a class="text-dark" href="{% if page.lang != site.site_languages[0]['lang_id'] %}{{ 'multiple' | prepend: '/browse.html#' | prepend: page.lang | prepend: '/' | relative_url }}{% else %}{{ 'pdf' | prepend: '/browse.html#' | relative_url }}{% endif %}">{% include translate.html id="home-objects-multiple" default="Multiples" %} <svg class="bi icon-sprite text-body" fill="currentColor" aria-hidden="true"><use xlink:href="{{ '/assets/lib/cb-icons.svg' | relative_url }}#icon-multiple"/></svg></a><br>
+            {% when 'application/html' %}
+            <a class="text-dark" href="{% if page.lang != site.site_languages[0]['lang_id'] %}{{ 'application/html' | prepend: '/browse.html#' | prepend: page.lang | prepend: '/' | relative_url }}{% else %}{{ 'application/html' | prepend: '/browse.html#' | relative_url }}{% endif %}">{% include translate.html id="home-objects-html" default="HTML Files" %} <svg class="bi icon-sprite text-body" fill="currentColor" aria-hidden="true"><use xlink:href="{{ '/assets/lib/cb-icons.svg' | relative_url }}#icon-default"/></svg></a><br>
             {% else %}
             <a class="text-dark" href="{% if page.lang != site.site_languages[0]['lang_id'] %}{{ 'pdf' | prepend: '/browse.html#' | prepend: page.lang | prepend: '/' | relative_url }}{% else %}{{ 'pdf' | prepend: '/browse.html#' | relative_url }}{% endif %}">{% include translate.html id="home-objects-file" default="Files" %} <svg class="bi icon-sprite text-body" fill="currentColor" aria-hidden="true"><use xlink:href="{{ '/assets/lib/cb-icons.svg' | relative_url }}#icon-default"/></svg></a><br>
             {% endcase %}
