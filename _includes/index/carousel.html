@@ -15,9 +15,17 @@
     - "btn-color" - a bootstrap color class to theme the buttons. Can be any bootstrap template color (e.g. info, success) or outline (e.g. outline-info, outline-success), including colors created in config-theme-colors. (optional, default "primary")
     - "btn-text" - the label used in the link btn to view the carousel item (optional, default "View Item")
     
+
+    - CB-Remix edit: I edit the four lines below to include thumbs in case of having thumbs, since 
+    they are lighter
 {%- endcomment -%}
 
-{%- assign image-items = site.data[site.metadata ] | where_exp: 'item', 'item.objectid' | where_exp: "item","item.format contains 'image' or item.image_thumb" -%}
+{%- assign object-pool = site.data[site.metadata] | where_exp: "item", "item.objectid" -%}
+{%- assign format-matches = object-pool | where_exp: "item", "item.format contains 'image'" -%}
+{%- assign thumb-matches = object-pool | where_exp: "item", "item.image_thumb" -%}
+{%- assign image-items = format-matches | concat: thumb-matches | uniq -%}
+
+
 {%- assign youtube-items = site.data[site.metadata ] | where_exp: 'item', 'item.objectid' | where_exp: "item","item.youtubeid" -%}
 {%- if youtube-items -%}{%- assign carousel-items = image-items | concat: youtube-items -%}{%- else -%}{%- assign carousel-items = image-items -%}{% endif %}
 
